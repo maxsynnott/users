@@ -4,21 +4,13 @@ const router = express.Router();
 
 const knex = require('../../db/knex');
 
-router.get('/:id', (req, res, next) => {
+router.get('/', (req, res, next) => {
 	const query = knex
 		.select('*')
 		.from('users')
-		.where('id', req.params.id)
-		.limit(1)
-		.first()
+		.whereIn('id', req.query.ids.split(','));
 
-	query.then((user) => {
-		if (user) {
-			res.json(user);
-		} else {
-			next();
-		}
-	})
+	query.then(users => res.json(users));
 })
 
 module.exports = router;
