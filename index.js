@@ -1,3 +1,5 @@
+require('dotenv').config()
+
 const express = require('express');
 
 const morgan = require('morgan');
@@ -7,6 +9,7 @@ const bodyParser = require('body-parser');
 const app = express();
 
 const users = require('./api/v1/users');
+const auth = require('./api/v1/auth');
 
 app.use(morgan('dev'));
 app.use(bodyParser.json());
@@ -14,6 +17,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 app.use('/api/v1/users', users);
+app.use('/api/v1/auth', auth);
 
 // Catch 404 and forward to error handler
 app.use((req, res, next) => {
