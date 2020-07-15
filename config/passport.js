@@ -41,9 +41,31 @@ passport.use(new GitHubStrategy({
     callbackURL: "http://127.0.0.1:3000/auth/github/callback"
   },
   function(accessToken, refreshToken, profile, cb) {
-    User.findOrCreate({ githubId: profile.id }, function (err, user) {
-      return cb(err, user);
-    });
+  	const findQuery = knex
+  		.select('*')
+  		.from('users')
+  		.where('github_id', profile.id)
+  		.limit(1)
+  		.first();
+
+  	findQuery
+  		.then((user) => {
+  			if (user) {
+  				return cb(err, user)
+  			} else {
+  				console.log(profile)
+  				
+  				const insertQuery = knex
+  					.returning('*')
+  					.insert({ github_id: profile.id })
+  					.into('users');
+
+  				insertQuery
+  					.then((user) => {
+  						return cb(err, user[0])
+  					})
+  			}
+  		})
   }
 ));
 
